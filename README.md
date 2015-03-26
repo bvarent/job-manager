@@ -42,4 +42,4 @@ TODO
 * Ability to kill timed out jobs.
 * Pessimistic locking when creating a solo job.
 * Web pages with job status summary, etc.
-* Job scheduling.
+* Move Entity\Base to external lib.
