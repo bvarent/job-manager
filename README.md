@@ -13,7 +13,10 @@ Features
 Installation, requirements
 --------------------------
 
-Require with composer and add the module to the Zend application config.
+* Require with composer
+* Add the module to the Zend application config.
+* Configure, create and apply doctrine migrations for your DB.
+
 
 Configuration
 -------------
@@ -42,4 +45,6 @@ TODO
 * Ability to kill timed out jobs.
 * Pessimistic locking when creating a solo job.
 * Web pages with job status summary, etc.
+* Job scheduling.
+* Doctrine migrations workflow.
 * Move Entity\Base to external lib.
