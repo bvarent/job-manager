@@ -20,7 +20,7 @@ Configuration
 
 ### User Configuration
 
-The top-level configuration key for user configuration of this module is `jobmanager`.
+The top-level configuration key for user configuration of this module is `bvarent-jobmanager`.
 
 #### Key: `entitymanager`
 

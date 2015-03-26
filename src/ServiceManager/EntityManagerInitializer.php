@@ -24,7 +24,7 @@ class EntityManagerInitializer implements InitializerInterface
         // Retrieve our EntityManager.
         $config = $serviceLocator->get('config');
         /* @var $config Config */
-        $entityManagerServiceName = $config['jobmanager']['entitymanager'];
+        $entityManagerServiceName = $config[\Bvarent\JobManager\Module::CONFIG_KEY]['entitymanager'];
         $em = $serviceLocator->get('doctrine.entitymanager.' . $entityManagerServiceName);
         /* @var $em EntityManager */
         

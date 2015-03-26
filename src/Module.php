@@ -8,6 +8,10 @@ use Zend\ModuleManager\Feature\ServiceProviderInterface;
 
 class Module implements AutoloaderProviderInterface, ConfigProviderInterface, ServiceProviderInterface
 {
+    /**
+     * The key to use in the global ZF2 config to identify this module.
+     */
+    const CONFIG_KEY = 'bvarent-jobmanager';
 
     public function getAutoloaderConfig()
     {

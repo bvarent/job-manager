@@ -1,0 +1,12 @@
+<?php
+/**
+ * Copy this file to your Zendesk 'autoload config override directory' (usually
+ *  <webroot>/config/autoload/) and populate with your local config for this module.
+ */
+
+return array(
+    'bvarent-jobmanager' => array(
+        // The name of the Doctrine EntityManager service to lift upon.
+        'entitymanager' => 'orm_default',
+    ),
+);
