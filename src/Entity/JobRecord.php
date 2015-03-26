@@ -2,6 +2,7 @@
 
 namespace Bvarent\JobManager\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -11,8 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @author Roel Arents <r.arents@bva-auctions.com>
  * 
  * @property integer $id
- * @property \DateTime $start The moment this job started. (Null means it hasn't started yet.)
- * @property \DateTime $lastUpdate The last time this job showed some sign of life.
+ * @property DateTime $start The moment this job started. (Null means it hasn't started yet.)
+ * @property DateTime $lastUpdate The last time this job showed some sign of life.
  * @property integer $timeOut The maximum number of seconds this job is allowed to have gone
  *  without showing a sign of life. Before trying to kill it and regarding it as failed.
  * @property integer $pid The process id (in the scope of the OS it is running on) of this job.

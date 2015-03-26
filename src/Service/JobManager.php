@@ -4,6 +4,7 @@ namespace Bvarent\JobManager\Service;
 
 use Bvarent\JobManager\Entity\JobRecord;
 use Bvarent\JobManager\EntityRepository\JobRecord as JobRecordRepo;
+use Bvarent\JobManager\ServiceManager\IEntityManagerAware;
 use DateInterval;
 use DateTime;
 use Doctrine\ORM\EntityManager;
@@ -17,7 +18,7 @@ use Zend\ServiceManager\ServiceManagerAwareInterface;
  *
  * @author Roel Arents <r.arents@bva-auctions.com>
  */
-class JobManager implements ServiceManagerAwareInterface
+class JobManager implements ServiceManagerAwareInterface, IEntityManagerAware
 {
 
     const JOB_BASE_CLASS = 'Bvarent\JobManager\Entity\JobRecord';
@@ -82,7 +83,7 @@ class JobManager implements ServiceManagerAwareInterface
         // Worst case, multiple concurrent job managers create a new job and none
         //  of them eventually keeps one.
         // TODO Use (multi-platform) pessimistic locking for creating a job.
-        $newJob = $this->createStartAndPersistNewJob($jobClass, $runSolo, $timeOut);
+        $newJob = $this->createNewJob($jobClass, $runSolo, $timeOut);
         $em->flush($newJob);
 
         // The job is now persisted, but in a not-started state. This is for a
@@ -180,7 +181,7 @@ class JobManager implements ServiceManagerAwareInterface
      *  as having failed.
      * @todo It would be not cool if other processes (or this) with the same
      *  (perhaps re-used) pid were killed.
-     * @return The number of ended jobs.
+     * @return integer The number of ended jobs.
      */
     public function killComaJobs()
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bva\JobManager;
+namespace Bvarent\JobManager;
 
 return array(
     'aliases' => array(
