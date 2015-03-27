@@ -1,6 +1,6 @@
 <?php
 
-namespace Bva\JobManager\Entity;
+namespace Bvarent\JobManager\Entity;
 
 use Bva\ZendeskSync\Exception\NoMatchForMagicCall;
 use Doctrine\ORM\Mapping as ORM;
