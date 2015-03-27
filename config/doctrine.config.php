@@ -13,7 +13,6 @@ if (!isset($modulePath)) {
 if (!isset($doctrineServiceNames)) {
     // Defaults.
     $doctrineServiceNames = array();
-    $doctrineServiceNames['configuration'] = 
     $doctrineServiceNames['driver'] = 'orm_default';    
 }
 
@@ -32,12 +31,6 @@ return array(
             'drivers' => array(
                 __NAMESPACE__ . '\Entity' => __NAMESPACE__ . '_driver'
             )
-        )
-    ),
-    'configuration' => array(
-        $doctrineServiceNames['configuration'] => array(
-            // Set the naming strategy to convert class names to tables and vice versa.
-            'namingstrategy' => __NAMESPACE__ . '\Orm\NamingStrategy',
         )
     ),
 );
