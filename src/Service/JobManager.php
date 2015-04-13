@@ -51,21 +51,68 @@ class JobManager implements ServiceManagerAwareInterface, IEntityManagerAware
     }
 
     /**
-     * Registers the start of a new job.
-     * @param string $jobClass The type/class of job to run.
+     * Starts a job, only if no conflicting jobs were found. By checking
+     *  that no other instances are running solo. Or are running at all, if this
+     *  one should run solo.
+     * @param JobRecord $jobRecord The job to start.
+     * @internal The job was optimistically created already, but not started.
+     *  Now it is checked for solo-ness. If not, it's deleted again. Worst case,
+     *  multiple concurrent job managers create a new job and none of them
+     *  eventually keeps one.
+     * @todo Use (multi-platform) pessimistic locking for creating a job.
+     * @throws RuntimeException When a conflicting job is found.
+     */
+    public function startJob($jobRecord)
+    {
+        $em = $this->entityManager;
+        $jobRepo = $em->getRepository(static::JOB_BASE_CLASS);
+        /* @var $jobRepo JobRecordRepo */
+        
+        // Optimistically persist the job, but in a not-started state. This is
+        //  for a concurrent job manager to detect it, so it can be regarded as
+        //  a conflicting job.
+        $jobRecord->start = null;
+        $em->persist($jobRecord);
+        $em->flush($jobRecord);
+
+        // Find jobs of this class, running solo (or any if this job needs solo), 
+        //  excluding this job itself.
+        $conflictingJobs = $jobRepo->getRunningJobs(get_class($jobRecord), ($jobRecord->solo ? null : true));
+        if (false !== $pos = array_search($jobRecord, $conflictingJobs)) {
+            unset($conflictingJobs[$pos]);
+        }
+
+        // If a conflicting job was found, end this job and throw an exception.
+        if (!empty($conflictingJobs)) {
+            $this->finishJob($jobRecord, false);
+            $firstRunningJob = current($conflictingJobs);
+            /* @var $firstRunningJob JobRecord */
+            throw new RuntimeException(sprintf('A job of type %s is already running %s since %s with pid %s.', $jobRecord, $firstRunningJob->start, ($firstRunningJob->solo ? '(solo)' : ''), $firstRunningJob->pid));
+        }
+
+        // Otherwise officially start this job.
+        $jobRecord->start = new DateTime();
+        $em->persist($jobRecord);
+        $em->flush($jobRecord);
+    }
+
+    /**
+     * Creates a new instance of (a subclass of) JobRecord.
+     * @param string $jobClass The type/class (FQCN) of job to run.
      * @param boolean $runSolo Should the job run solo? I.a.w. no other jobs of
      *  the same class/type may be running.
      * @param integer $timeOut The max number of seconds the job may run without
      *  showing a sign of life.
      * @return JobRecord
      * @throws InvalidArgumentException For an invalid job class.
-     * @throws RuntimeException When a conflicting job is found.
      */
-    public function startNewJob($jobClass, $runSolo = null, $timeOut = null)
+    public function getNewJob($jobClass, $runSolo = null, $timeOut = null)
     {
+        $em = $this->entityManager;
+        
         // Check args.
         if (!is_a($jobClass, static::JOB_BASE_CLASS, true)) {
-            throw new InvalidArgumentException('Job class/type should be a ' . static::JOB_BASE_CLASS);
+            throw new InvalidArgumentException('Job class/type should be a (descendant of) ' . static::JOB_BASE_CLASS);
         }
         if (is_null($runSolo)) {
             $runSolo = $jobClass::getSoloByDefault();
@@ -76,74 +123,13 @@ class JobManager implements ServiceManagerAwareInterface, IEntityManagerAware
             $timeOut = (int) $timeOut;
         }
 
-        $em = $this->entityManager;
-
-        // Optimistically create the job.
-        // Afterwards check if it is solo. If not, delete it again.
-        // Worst case, multiple concurrent job managers create a new job and none
-        //  of them eventually keeps one.
-        // TODO Use (multi-platform) pessimistic locking for creating a job.
-        $newJob = $this->createNewJob($jobClass, $runSolo, $timeOut);
-        $em->flush($newJob);
-
-        // The job is now persisted, but in a not-started state. This is for a
-        //  concurrent job manager to detect it, so it can be regarded as a
-        //  conflicting job.
-        
-        // (Attempt to) start the job.
-        $this->startJob($newJob);
-        $em->flush($newJob);
-
-        return $newJob;
-    }
-
-    /**
-     * Starts a job, only if no conflicting jobs were found. By checking
-     *  that no other instances are running solo. Or are running at all, if this
-     *  one should run solo.
-     * @param JobRecord $jobRecord The job to start.
-     * @throws RuntimeException When a conflicting job is found.
-     */
-    protected function startJob($jobRecord)
-    {
-        $em = $this->entityManager;
-        $jobRepo = $em->getRepository(static::JOB_BASE_CLASS);
-        /* @var $jobRepo JobRecordRepo */
-
-        // Find jobs of this class, running solo (or any if this job needs solo), 
-        //  excluding this job itself.
-        $conflictingJobs = $jobRepo->getRunningJobs(get_class($jobRecord), ($jobRecord->solo ? null : true));
-        if (false !== $pos = array_search($jobRecord, $conflictingJobs)) {
-            unset($conflictingJobs[$pos]);
-        }
-
-        // Throw an exception if a conflicting job was found.
-        if (!empty($conflictingJobs)) {
-            $firstRunningJob = current($conflictingJobs);
-            /* @var $firstRunningJob JobRecord */
-            throw new RuntimeException(sprintf('A job of type %s is already running %s since %s with pid %s.', $jobRecord, $firstRunningJob->start, ($firstRunningJob->solo ? '(solo)' : ''), $firstRunningJob->pid));
-        }
-
-        // Otherwise officially start this job.
-        $jobRecord->start = new DateTime();
-    }
-
-    /**
-     * Creates a new instance of a subclass of JobRecord.
-     * See params of {@see startNewJob}
-     */
-    protected function createNewJob($jobClass, $runSolo, $timeOut)
-    {
-        $em = $this->entityManager;
-
         // Create new JobRecord
         $newJob = new $jobClass();
         /* @var $newJob JobRecord */
         $newJob->solo = !!$runSolo;
-        if (!is_int($timeOut)) {
+        if (is_int($timeOut)) {
             $newJob->timeOut = $timeOut;
         }
-        $em->persist($newJob);
 
         return $newJob;
     }
