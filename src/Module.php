@@ -2,9 +2,12 @@
 
 namespace Bvarent\JobManager;
 
+use Zend\Config\Config;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
+use Zend\ModuleManager\ModuleEvent;
+use Zend\ModuleManager\ModuleManagerInterface;
 
 class Module implements AutoloaderProviderInterface, ConfigProviderInterface, ServiceProviderInterface
 {
