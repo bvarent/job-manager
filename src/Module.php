@@ -49,21 +49,36 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Se
     }
     
     /**
-     * Determines the doctrine service names to use from the module's config.
-     * @param Config $totalConfig
-     * @return Map<string, string> [service_type => service_name]
+     * Looks up configured names of doctrine services for some entity manager to use.
+     * @param Config $config
+     * @param string $entityManagerName
+     * @return Map<string, string> [
+     *  entitymanager => ... ,
+     *  configuration => ... ,
+     *  connection => ... ,
+     *  driver => ... ]
      */
-    protected function getDoctrineServiceNames(Config $totalConfig)
+    protected function getDoctrineServiceNamesFromEntityManager(Config & $config, $entityManagerName = 'orm_default')
     {
-        // Get the entitymanager's name to use from the config.
-        $entityManagerName = $totalConfig[static::CONFIG_KEY]['entitymanager'];
-        $servicenames = array();
-        $servicenames['entitymanager'] = $entityManagerName;
-        $servicenames['connection'] = $totalConfig['doctrine']['entitymanager'][$entityManagerName]['connection'];
-        $servicenames['configuration'] = $totalConfig['doctrine']['entitymanager'][$entityManagerName]['configuration'];
-        $servicenames['driver'] = $totalConfig['doctrine']['configuration'][$servicenames['configuration']]['driver'];
+        $entityManagerName = !empty($entityManagerName) ? $entityManagerName : 'orm_default';
+        $defaultServiceName = $entityManagerName;
+        $emptyConfig = new Config(array());
+        $doctrineConfig = $config->get('doctrine', $emptyConfig);
+        $doctrineServiceNames = array();
         
-        return $servicenames;
+        // Take over entitymanager name.
+        $doctrineServiceNames['entitymanager'] = $entityManagerName;
+        
+        // Find connection and configuration names in said entitymanager's config.
+        $entityManagerConfig = $doctrineConfig->get('entitymanager', $emptyConfig)->get($entityManagerName, $emptyConfig);
+        $doctrineServiceNames['connection'] = $entityManagerConfig->get('connection', $defaultServiceName);
+        $doctrineServiceNames['configuration'] = $entityManagerConfig->get('configuration', $defaultServiceName);
+        
+        // Find the driver in said configuration's config.
+        $configurationConfig = $doctrineConfig->get('configuration', $emptyConfig)->get($doctrineServiceNames['configuration'], $defaultServiceName);
+        $doctrineServiceNames['driver'] = $configurationConfig->get('driver', $defaultServiceName);
+        
+        return $doctrineServiceNames;
     }
 
     /**
@@ -76,7 +91,7 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Se
         $modulePath = $this->getModulePath();
         
         // Get doctrine services names to use. This variable is used by the included config file.
-        $doctrineServiceNames = $this->getDoctrineServiceNames($totalConfig);
+        $doctrineServiceNames = $this->getDoctrineServiceNamesFromEntityManager($totalConfig, $totalConfig[static::CONFIG_KEY]['entitymanager']);
 
         $doctrineConfigArray = include $modulePath . '/config/doctrine.config.php';
         $doctrineConfig = new Config(array('doctrine' => $doctrineConfigArray));
