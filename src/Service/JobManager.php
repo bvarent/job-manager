@@ -77,6 +77,7 @@ class JobManager implements ServiceManagerAwareInterface, IEntityManagerAware
 
         // Find jobs of this class, running solo (or any if this job needs solo), 
         //  excluding this job itself.
+        // TODO $this->killComaJobs() first?;
         $conflictingJobs = $jobRepo->getRunningJobs(get_class($jobRecord), ($jobRecord->solo ? null : true));
         if (false !== $pos = array_search($jobRecord, $conflictingJobs)) {
             unset($conflictingJobs[$pos]);

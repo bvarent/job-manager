@@ -26,9 +26,9 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\DiscriminatorColumn(
  *  name = "_type",
  *  type = "string" )
- * \\ORM\DiscriminatorMap can't be defined here, since subclasses will be defined
- *   outside of the scope of this module. The map will be created automatically
- *   by MetaDataFactory#addDefaultDiscriminatorMap.
+ * \\ An ORM\DiscriminatorMap can't be defined here, since subclasses are defined
+ *   outside the scope of this module. The map will be created automatically
+ *   however by MetaDataFactory#addDefaultDiscriminatorMap.
  */
 abstract class JobRecord extends Base
 {
