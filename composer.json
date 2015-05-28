@@ -11,10 +11,10 @@
     ],
     "require": {
         "php": ">=5.3.3",
-        "zendframework/zend-config": "~2.3",
-        "zendframework/zend-servicemanager": "~2.3",
-        "zendframework/zend-modulemanager": "~2.3",
-        "doctrine/orm": "2.4.*"
+        "zendframework/zend-config": "^2.3",
+        "zendframework/zend-servicemanager": "^2.3",
+        "zendframework/zend-modulemanager": "^2.3",
+        "doctrine/doctrine-module": "~0.8"
     },
     "autoload": {
         "psr-4": {
