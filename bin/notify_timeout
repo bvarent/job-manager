@@ -1,0 +1,12 @@
+#!/bin/sh
+# Prints an error message if `timeout` had to kill a process.
+# Assumes --preserve-status was not set on timeout.
+# Usage:
+# > this_script timeout 60s rest of the command
+
+$@
+if [ "$?" = "124" ]; then
+        echo "process timed out." 1>&2
+        exit 124
+fi
+
