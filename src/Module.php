@@ -75,7 +75,7 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Se
         $doctrineServiceNames['configuration'] = $entityManagerConfig->get('configuration', $defaultServiceName);
         
         // Find the driver in said configuration's config.
-        $configurationConfig = $doctrineConfig->get('configuration', $emptyConfig)->get($doctrineServiceNames['configuration'], $defaultServiceName);
+        $configurationConfig = $doctrineConfig->get('configuration', $emptyConfig)->get($doctrineServiceNames['configuration'], $emptyConfig);
         $doctrineServiceNames['driver'] = $configurationConfig->get('driver', $defaultServiceName);
         
         return $doctrineServiceNames;
