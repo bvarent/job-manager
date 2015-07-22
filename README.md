@@ -14,7 +14,7 @@ Installation, requirements
 --------------------------
 
 * Require with composer
-* Add the module to the Zend application config.
+* Add the module to the Zend application config. After DoctrineModule and DoctrineORMModule.
 * Create your own JobRecord descendant(s). Integrate the JobManager in your jobs.
 * Configure, create and apply doctrine migrations for your DB.
 

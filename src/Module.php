@@ -5,11 +5,12 @@ namespace Bvarent\JobManager;
 use Zend\Config\Config;
 use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
+use Zend\ModuleManager\Feature\DependencyIndicatorInterface;
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
 use Zend\ModuleManager\ModuleEvent;
 use Zend\ModuleManager\ModuleManagerInterface;
 
-class Module implements AutoloaderProviderInterface, ConfigProviderInterface, ServiceProviderInterface
+class Module implements AutoloaderProviderInterface, ConfigProviderInterface, ServiceProviderInterface, DependencyIndicatorInterface
 {
     /**
      * The key to use in the global ZF2 config to identify this module.
@@ -35,6 +36,14 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Se
                     __NAMESPACE__ => __DIR__,
                 ),
             ),
+        );
+    }
+
+    public function getModuleDependencies()
+    {
+        return array(
+            'DoctrineModule',
+            'DoctrineORMModule',
         );
     }
 
