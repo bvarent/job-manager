@@ -90,11 +90,33 @@ class JobManager implements ServiceManagerAwareInterface, IEntityManagerAware
             /* @var $firstRunningJob JobRecord */
             throw new RuntimeException(sprintf('A job of type %s is already running %s since %s with pid %s.', $jobRecord, $firstRunningJob->start, ($firstRunningJob->solo ? '(solo)' : ''), $firstRunningJob->pid));
         }
+        
+        // Add pid if not yet set.
+        if (!$jobRecord->pid) {
+            $jobRecord->pid = $this->getPid();
+        }
 
         // Otherwise officially start this job.
         $jobRecord->start = new DateTime();
         $em->persist($jobRecord);
         $em->flush($jobRecord);
+    }
+    
+    /**
+     * @return int The current Process ID.
+     */
+    public function getPid()
+    {
+        // Try to get the pid.
+        if (function_exists('posix_getpid')) {
+            $pid = posix_getpid();
+        } elseif (function_exists('getmypid')) {
+            $pid = getmypid();
+        } else {
+            $pid = false;
+        }
+        
+        return (int) $pid;
     }
 
     /**
