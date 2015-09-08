@@ -5,7 +5,6 @@ namespace Bvarent\JobManager\EntityRepository;
 use Bvarent\JobManager\Entity;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * The repository for JobRecords.
@@ -24,70 +23,74 @@ class JobRecord extends EntityRepository
     public function getRunningJobs($jobClass = null, $solo = null)
     {
         // Build base query.
-        $qryBuilder = $this->_em->createQueryBuilder()
-                ->select('j')
-                ->from($this->_entityName, 'j')
+        $qryBuilder = $this->createQueryBuilder('j')
                 ->where('j.success IS NULL');
-        
+
         // Filter on job class.
         if (!empty($jobClass)) {
             $qryBuilder->andWhere('j INSTANCE OF :jobclass')
                     ->setParameter(':jobclass', $jobClass);
         }
-        
+
         // Filter on running solo.
         if (!is_null($solo)) {
             $qryBuilder->andWhere('j.solo = ' . ($solo ? 'true' : 'false'));
         }
-        
+
         // Execute query.
         $qry = $qryBuilder->getQuery();
         $jobRecords = $qry->getResult();
-        
+
         return $jobRecords;
     }
-    
+
     /**
      * Collects all expired cq timed out jobs which are still running.
+     * @param string $jobClass The kind/class/type of job. Null = any kind.
      * @return Entity\JobRecord[]
      */
-    public function getTimedOutJobs()
+    public function getTimedOutJobs($jobClass = null)
     {
         // Build query.
-        $qryBuilder = $this->_em->createQueryBuilder()
-                ->select('j')
-                ->from($this->_entityName, 'j')
-                ->where('j.success IS NULL')
-                ->andWhere('j.start IS NOT NULL')
-                ->andWhere('DATE_ADD(j.lastUpdate, j.timeout, \'second\') < CURRENT_DATE()');
-        
+        $expr = $this->_em->getExpressionBuilder();
+        $qryBld = $this->createQueryBuilder('j')
+                ->andWhere($expr->isNull('j.success'))
+                ->andWhere($expr->isNotNull('j.start'))
+                ->andWhere($expr->lt('DATE_ADD(j.lastUpdate, j.timeout, \'second\')', 'CURRENT_DATE()'));
+
+        if ($jobClass) {
+            $qryBld->andWhere('j INSTANCE OF ' . $jobClass);
+        }
+
         // Execute query.
-        $qry = $qryBuilder->getQuery();
-        $jobRecords = $qry->getResult();
-        
+        $jobRecords = $qryBld->getQuery()->getResult();
+
         return $jobRecords;
     }
-    
+
     /**
      * Collects all finished jobs that are of a certain age.
-     * @param integer $age The minimum age (in seconds) a job record should have.
-     * @return Entity\JobRecord[]
+     * @param integer $ageInSeconds The minimum age (in seconds) a job record should have.
+     * @param string $jobClass The kind/class/type of job. Null = any kind.
+     * @return JobRecord[]
      */
-    public function getOldJobs($age)
+    public function getOldJobs($ageInSeconds, $jobClass = null)
     {
         // Build query.
-        $qryBuilder = $this->_em->createQueryBuilder()
-                ->select('j')
-                ->from($this->_entityName, 'j')
-                ->where('j.success IS NOT NULL')
-                ->andWhere('j.start < DATE_SUB(CURRENT_DATE(), :age, \'second\') < ')
-                ->setParameter('age', $age, DBALType::INTEGER);
+        $expr = $this->_em->getExpressionBuilder();
+        $qryBld = $this->createQueryBuilder('j')
+                ->where($expr->isNotNull('j.success'))
+                ->andWhere($expr->lt('j.start', ':before_this_date'))
+                ->setParameter('before_this_date', new \DateTime("-{$ageInSeconds} seconds"));
+
+        if ($jobClass) {
+            $qryBld->andWhere('j INSTANCE OF ' . $jobClass);
+        }
         
         // Execute query.
-        $qry = $qryBuilder->getQuery();
-        $jobRecords = $qry->getResult();
-        
-        return $jobRecords;
+        $results = $qryBld->getQuery()->getResult();
+
+        return $results;
     }
 
 }

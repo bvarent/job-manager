@@ -16,6 +16,10 @@
         "zendframework/zend-modulemanager": "^2.3",
         "doctrine/doctrine-module": "~0.8"
     },
+    "require-dev": {
+        "zendframework/zend-mvc": "^2.3",
+        "zendframework/zend-console": "^2.3"
+    },
     "autoload": {
         "psr-4": {
             "Bvarent\\JobManager\\": "src/"

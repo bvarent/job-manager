@@ -126,9 +126,9 @@ TODO
 ----
 
 * Testing.
-* Ability to kill timed out jobs.
 * Pessimistic locking when creating a solo job.
 * Web pages with job status summary, etc.
 * Job scheduling.
 * Doctrine migrations workflow.
 * Move Entity\Base to external lib.
+* Require PHP 5.5, to use bvarent\zf2-orm-base and bvarent\util

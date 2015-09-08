@@ -10,6 +10,7 @@ use DateTime;
 use Doctrine\ORM\EntityManager;
 use InvalidArgumentException;
 use RuntimeException;
+use UnexpectedValueException;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\ServiceManagerAwareInterface;
 
@@ -186,23 +187,36 @@ class JobManager implements ServiceManagerAwareInterface, IEntityManagerAware
     }
 
     /**
-     * Tries to end, maybe even kill, jobs that have timed out and record those
-     *  as having failed.
-     * @todo It would be not cool if other processes (or this) with the same
-     *  (perhaps re-used) pid were killed.
+     * Registers jobs that have timed out as having failed.
+     * If desired, also sends a (kill) signal to the process.
+     * @param string $jobRecordTypeOrClass Only consider Job Records of this class or type.
+     *  E.g. My\NS\Entity\SomeJobRecord or somejobrecord
+     * @param int $sendSignal Send this signal to the corresponding process. E.g. 9
+     *  {@link http://people.cs.pitt.edu/~alanjawi/cs449/code/shell/UnixSignals.htm list of signals}
+     *  WARNING: Other processes (or this) with the same (perhaps re-used) could be killed.
      * @return integer The number of ended jobs.
+     * @throws UnexpectedValueException For an unknown job type or class.
      */
-    public function killComaJobs()
+    public function endComaJobs($jobRecordTypeOrClass = null, $sendSignal = null)
     {
+        // Sanitize args.
+        $jobRecordClass = $this->getJobRecordClassByClassOrType($jobRecordTypeOrClass);
+        $sendSignal = is_null($sendSignal) ? null : (int)$sendSignal;
+        
+        // Find all matching job records.
         $em = $this->entityManager;
         $jobRepo = $em->getRepository(static::JOB_BASE_CLASS);
         /* @var $jobRepo JobRecordRepo */
+        $comaJobs = $jobRepo->getTimedOutJobs($jobRecordClass);
         
-        $comaJobs = $jobRepo->getTimedOutJobs();
+        // End each job.
         foreach ($comaJobs as $comaJob) {
-            // TODO exec("kill -9 $comaJob->pid");
+            // Send a signal if desired.
+            if (!is_null($sendSignal)) {
+                \exec("kill -s {$sendSignal} {$comaJob->pid}");
+            }
             
-            // Mark as a failure.
+            // Mark job as a failure.
             $comaJob->success = false;
             $em->persist($comaJob);
         }
@@ -212,23 +226,57 @@ class JobManager implements ServiceManagerAwareInterface, IEntityManagerAware
     }
 
     /**
-     * Removes logs of jobs that are no longer running and are older than a
-     *  certain age.
-     * @param integer $age The minimum age (in seconds) a job record should have to
-     *  be deleted.
+     * Removes logs of jobs that are no longer running and are older than a certain age.
+     * @param DateInterval $age The minimum age a job record should have to be deleted.
+     * @param string $jobRecordTypeOrClass Only consider Job Records of this class or type.
+     *  E.g. My\NS\Entity\SomeJobRecord or somejobrecord
      * @return integer Number of jobs deleted.
+     * @throws UnexpectedValueException For an unknown job type or class.
      */
-    public function deleteOldJobRecords(DateInterval $age)
+    public function deleteOldJobRecords(DateInterval $age, $jobRecordTypeOrClass = null)
     {
         $em = $this->entityManager;
         $jobRepo = $em->getRepository(static::JOB_BASE_CLASS);
         /* @var $jobRepo JobRecordRepo */
+        $jobRecordClass = $this->getJobRecordClassByClassOrType($jobRecordTypeOrClass);
         
-        $oldJobs = $jobRepo->getOldJobs($age);
+        // Calc age in seconds.
+        // TODO Use Bvarent\Util\Datetimer#DateIntervalToSeconds
+        $reference = new \DateTime();
+        $endTime = $reference->add($age);
+        $ageInSeconds = $endTime->getTimestamp() - $reference->getTimestamp();
+        
+        $oldJobs = $jobRepo->getOldJobs($ageInSeconds, $jobRecordClass);
         foreach ($oldJobs as $oldJob) {
             $em->remove($oldJob);
         }
         $em->flush();
+    }
+    
+    /**
+     * @param string|null $classOrDiscriminatorName Either the class name or discriminator name of en entity extending the base JobRecord class.
+     * @return string|null The corresponding full entity class name.
+     * @throws UnexpectedValueException For an unknown type or class.
+     */
+    protected function getJobRecordClassByClassOrType($classOrDiscriminatorName = null)
+    {
+        // If it is null or an existing class, it's easy.
+        if (is_null($classOrDiscriminatorName)) {
+            return null;
+        }
+        $classOrDiscriminatorName = (string) $classOrDiscriminatorName;
+        if (class_exists($classOrDiscriminatorName)
+                && is_subclass_of($classOrDiscriminatorName, static::JOB_BASE_CLASS) ) {
+            return $classOrDiscriminatorName;
+        }
+        
+        // Find by discriminator name.
+        $jobRecordBaseClassMetaData = $this->entityManager->getClassMetadata(static::JOB_BASE_CLASS);
+        if (isset($jobRecordBaseClassMetaData->discriminatorMap[$classOrDiscriminatorName])) {
+            return $jobRecordBaseClassMetaData->discriminatorMap[$classOrDiscriminatorName];
+        }
+        
+        throw new UnexpectedValueException(sprintf("Unknown job record entity class: %s", $classOrDiscriminatorName));
     }
 
 }
