@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
  *  without showing a sign of life. Before trying to kill it and regarding it as failed.
  * @property integer $pid The process id (in the scope of the OS it is running on) of this job.
  * @property boolean $success Whether this job succeeded. (1 = yes, 0 = no, stopped and failed, null = still running).
- * @property boolean $solo Whether this job is running solo.
+ * @property boolean $solo Whether this job is running solo. No jobs of the same type/class may be started.
  * 
  * @ORM\Entity(
  *  repositoryClass = "Bvarent\JobManager\EntityRepository\JobRecord" )
