@@ -11,7 +11,7 @@ return array(
     // Controllers.
     'controllers' => array(
         'invokables' => array(
-            __NAMESPACE__ . 'Controller\Console' => __NAMESPACE__ . 'Controller\Console',
+            __NAMESPACE__ . '\Controller\Console' => __NAMESPACE__ . '\Controller\Console',
         ),
     ),
     
@@ -21,18 +21,18 @@ return array(
             'routes' => array(
                 Module::CONFIG_KEY . ' end-coma-jobs' => array(
                     'options' => array(
-                        Module::CONFIG_KEY . ' end-coma-jobs [--signal=] [<type>]',
+                        'route' => Module::CONFIG_KEY . ' end-coma-jobs [--signal=] [<type>]',
                         'defaults' => array(
-                            'controller' => __NAMESPACE__ . 'Controller\Console',
+                            'controller' => __NAMESPACE__ . '\Controller\Console',
                             'action' => 'endComaJobs',
                         ),
                     ),
                 ),
                 Module::CONFIG_KEY . ' delete-old-jobs' => array(
                     'options' => array(
-                        Module::CONFIG_KEY . ' delete-old-jobs --age= [<type>]',
+                        'route' => Module::CONFIG_KEY . ' delete-old-jobs --age= [<type>]',
                         'defaults' => array(
-                            'controller' => __NAMESPACE__ . 'Controller\Console',
+                            'controller' => __NAMESPACE__ . '\Controller\Console',
                             'action' => 'deleteOldJobs',
                         ),
                     ),

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bvarent\JobManager;
+namespace Bvarent\JobManager\Controller;
 
 use Bvarent\JobManager\Service\JobManager;
 use Zend\Mvc\Controller\AbstractConsoleController;
@@ -17,7 +17,7 @@ class Console extends AbstractConsoleController
      */
     public function getJobManager()
     {
-        return $this->serviceLocator->get(__NAMESPACE__ . '\Service\JobManager');
+        return $this->serviceLocator->get('Bvarent\JobManager\Service\JobManager');
     }
     
     /**
@@ -36,7 +36,7 @@ class Console extends AbstractConsoleController
     /**
      * Invokes JobManager#deleteOldJobRecords.
      */
-    public function deleteOldJobRecordsAction()
+    public function deleteOldJobsAction()
     {
         $age = new \DateInterval($this->params('age'));
         $jobRecordTypeOrClass = $this->params('type');

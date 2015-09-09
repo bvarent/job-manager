@@ -210,19 +210,21 @@ class JobManager implements ServiceManagerAwareInterface, IEntityManagerAware
         $comaJobs = $jobRepo->getTimedOutJobs($jobRecordClass);
         
         // End each job.
+        $endedJobsCount = 0;
         foreach ($comaJobs as $comaJob) {
             // Send a signal if desired.
-            if (!is_null($sendSignal)) {
+            if (!is_null($sendSignal) && $comaJob->pid) {
                 \exec("kill -s {$sendSignal} {$comaJob->pid}");
             }
             
             // Mark job as a failure.
             $comaJob->success = false;
             $em->persist($comaJob);
+            $endedJobsCount++;
         }
         $em->flush();
         
-        return count($comaJobs);
+        return $endedJobsCount;
     }
 
     /**
@@ -242,15 +244,19 @@ class JobManager implements ServiceManagerAwareInterface, IEntityManagerAware
         
         // Calc age in seconds.
         // TODO Use Bvarent\Util\Datetimer#DateIntervalToSeconds
-        $reference = new \DateTime();
-        $endTime = $reference->add($age);
-        $ageInSeconds = $endTime->getTimestamp() - $reference->getTimestamp();
+        $now = new \DateTime();
+        $birth = new \DateTime();
+        $ageInSeconds = $now->getTimestamp() - $birth->sub($age)->getTimestamp();
         
         $oldJobs = $jobRepo->getOldJobs($ageInSeconds, $jobRecordClass);
+        $deletedJobsCount = 0;
         foreach ($oldJobs as $oldJob) {
             $em->remove($oldJob);
+            $deletedJobsCount++;
         }
         $em->flush();
+        
+        return $deletedJobsCount;
     }
     
     /**

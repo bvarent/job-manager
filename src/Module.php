@@ -162,13 +162,13 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Se
         return array(
             Module::CONFIG_KEY . ' end-coma-jobs [--signal=] [<type>]' => 'Mark timed out jobs as ended by setting their success parameter to false.',
             array(
-                "--signal" => "(Optional) Send this (kill) signal to the job's process. WARNING: The PID might not belong to the running script/job anymore. Also you might not have enough permissions to kill the process.",
-                "<type>" => "(Optional) Only consider job records of this type. Specify the full entity class or the discriminator name.",
+                "--signal", "(Optional) Send this (kill) signal to the job's process. WARNING: The PID might not belong to the running script/job anymore. Also you might not have enough permissions to kill the process.",
+                "<type>", "(Optional) Only consider job records of this type. Specify the full entity class or the discriminator name.",
             ),
             Module::CONFIG_KEY . ' delete-old-jobs --age= [<type>]' => 'Delete old, finalized, jobs from the log.',
             array(
-                "--age" => "Jobs must be at least this old. Specified as an ISO_8601 duration. E.g. 'P2M' for 2 months and older.",
-                "<type>" => "(Optional) Only consider job records of this type. Specify the full entity class or the discriminator name.",
+                "--age", "Jobs must be at least this old. Specified as an ISO_8601 duration. E.g. 'P2M' for 2 months and older.",
+                "<type>", "(Optional) Only consider job records of this type. Specify the full entity class or the discriminator name.",
             ),
         );
     }
