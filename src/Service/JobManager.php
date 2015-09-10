@@ -290,10 +290,33 @@ class JobManager implements IEntityManagerAware
         
         throw new UnexpectedValueException(sprintf("Unknown job record entity class: %s", $classOrDiscriminatorName));
     }
+    
+    protected $inited = false;
+    
+    protected function init()
+    {
+        if ($this->inited) {
+            return false;
+        }
+        
+        // End coma jobs?
+        if ($endComaJobs = $this->options->end_coma_jobs_on_init) {
+            $sendSignal = $this->options->end_coma_jobs_on_init_sig;
+            if (is_bool($endComaJobs)) {
+                $this->endComaJobs(null, $sendSignal);
+            } else {
+                foreach ((array)$endComaJobs as $jobType) {
+                    $this->endComaJobs($jobType, $sendSignal);
+                }
+            }
+        }
+    }
 
     public function __construct(Options\JobManager $options, EntityManager $entityManager)
     {
         $this->setOptions($options);
         $this->setEntityManager($entityManager);
+        
+        $this->init();
     }
 }

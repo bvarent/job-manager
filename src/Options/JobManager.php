@@ -2,6 +2,7 @@
 
 namespace Bvarent\JobManager\Options;
 
+use InvalidArgumentException;
 use Zend\Stdlib\AbstractOptions;
 
 /**
@@ -27,5 +28,34 @@ class JobManager extends AbstractOptions
     protected function setEntitymanager($val)
     {
         $this->entitymanager = (string) $val;
+    }
+
+    protected $endComaJobsOnInit;
+    
+    protected function getEndComaJobsOnInit()
+    {
+        return $this->endComaJobsOnInit;
+    }
+
+    protected function setEndComaJobsOnInit($val)
+    {
+        if (!(is_boolean($val)
+                ||  is_string($val)
+                || (is_array($val) && (count($val) === array_sum(array_map('is_string', $val))))) ) {
+            throw new InvalidArgumentException(sprintf("'end_coma_jobs_on_init should be a bool, string or string[]"));
+        }
+        $this->endComaJobsOnInit = $val;
+    }
+
+    protected $endComaJobsOnInitSig;
+    
+    protected function getEndComaJobsOnInitSig()
+    {
+        return $this->endComaJobsOnInitSig;
+    }
+
+    protected function setEndComaJobsOnInitSig($val)
+    {
+        $this->endComaJobsOnInitSig = max(0, (int) $val);
     }
 }
