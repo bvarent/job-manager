@@ -3,9 +3,7 @@
 namespace Bvarent\JobManager;
 
 return array(
-    Module::CONFIG_KEY => array(
-        Options\JobManager::defaults(),
-    ),
+    Module::CONFIG_KEY => Options\JobManager::defaults(),
     
     // Controllers.
     'controllers' => array(

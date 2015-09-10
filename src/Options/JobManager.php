@@ -43,7 +43,7 @@ class JobManager extends AbstractOptions
 
     protected function setEndComaJobsOnInit($val)
     {
-        if (!(is_boolean($val)
+        if (!(is_bool($val)
                 ||  is_string($val)
                 || (is_array($val) && (count($val) === array_sum(array_map('is_string', $val))))) ) {
             throw new InvalidArgumentException(sprintf("'end_coma_jobs_on_init should be a bool, string or string[]"));
