@@ -9,12 +9,16 @@ use Zend\Stdlib\AbstractOptions;
  * Options for \Bvarent\JobManager\Service\JobManager
  * 
  * @property string $entitymanager Name of the doctrine entitymanager service to use. The X in doctrine.entitymanager.X.
+ * @property boolean|string|string[] $end_coma_jobs_on_init End coma (timed out) jobs upon initializing the Job Manager. If a(n array of) string(s) is given, only that jobrecord type will be ended.
+ * @property int $end_coma_jobs_on_init_sig If configured to end coma jobs upon init, also send those jobs this interrupt signal.
  */
 class JobManager extends AbstractOptions
 {
     public static function defaults() {
         return array(
             'entitymanager' => 'orm_default',
+            'end_coma_jobs_on_init' => false,
+            'end_coma_jobs_on_init_sig' => null,
         );
     }
 
