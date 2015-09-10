@@ -4,9 +4,10 @@
  *  <webroot>/config/autoload/) and populate with your local config for this module.
  */
 
+namespace Bvarent\JobManager;
+
 return array(
-    'bvarent-jobmanager' => array(
-        // The name of the Doctrine EntityManager service to lift upon.
-        'entitymanager' => 'orm_default',
+    Module::CONFIG_KEY => array(
+        // 'entitymanager' => if anything other than orm_default
     ),
 );

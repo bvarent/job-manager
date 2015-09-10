@@ -4,6 +4,7 @@ namespace Bvarent\JobManager\Service;
 
 use Bvarent\JobManager\Entity\JobRecord;
 use Bvarent\JobManager\EntityRepository\JobRecord as JobRecordRepo;
+use Bvarent\JobManager\Options;
 use Bvarent\JobManager\ServiceManager\IEntityManagerAware;
 use DateInterval;
 use DateTime;
@@ -11,35 +12,22 @@ use Doctrine\ORM\EntityManager;
 use InvalidArgumentException;
 use RuntimeException;
 use UnexpectedValueException;
-use Zend\ServiceManager\ServiceManager;
-use Zend\ServiceManager\ServiceManagerAwareInterface;
 
 /**
  * Manager of background jobs cq tasks.
  *
  * @author Roel Arents <r.arents@bva-auctions.com>
  */
-class JobManager implements ServiceManagerAwareInterface, IEntityManagerAware
+class JobManager implements IEntityManagerAware
 {
 
     const JOB_BASE_CLASS = 'Bvarent\JobManager\Entity\JobRecord';
-
-    /**
-     * The global ZF2 Service Manager.
-     * @var ServiceManager
-     */
-    protected $serviceManager;
 
     /**
      * The Doctrine Entity Manager which manages our JobRecord entities.
      * @var EntityManager
      */
     protected $entityManager;
-
-    public function setServiceManager(ServiceManager $serviceManager)
-    {
-        $this->serviceManager = $serviceManager;
-    }
 
     public function getEntityManager()
     {
@@ -49,6 +37,24 @@ class JobManager implements ServiceManagerAwareInterface, IEntityManagerAware
     public function setEntityManager(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
+    }
+    
+    /**
+     * @var Options\JobManager
+     */
+    protected $options;
+    
+    public function setOptions(Options\JobManager $options)
+    {
+        $this->options = $options;
+    }
+    
+    /**
+     * @return Options\JobManager (Readonly clone)
+     */
+    public function getOptions()
+    {
+        return clone $this->options;
     }
 
     /**
@@ -285,4 +291,9 @@ class JobManager implements ServiceManagerAwareInterface, IEntityManagerAware
         throw new UnexpectedValueException(sprintf("Unknown job record entity class: %s", $classOrDiscriminatorName));
     }
 
+    public function __construct(Options\JobManager $options, EntityManager $entityManager)
+    {
+        $this->setOptions($options);
+        $this->setEntityManager($entityManager);
+    }
 }

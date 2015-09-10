@@ -2,7 +2,6 @@
 
 namespace Bvarent\JobManager\ServiceManager;
 
-use Bvarent\JobManager\Service\JobManager;
 use Zend\ServiceManager\InitializerInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
