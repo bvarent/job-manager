@@ -60,6 +60,6 @@ class JobManager extends AbstractOptions
 
     protected function setEndComaJobsOnInitSig($val)
     {
-        $this->endComaJobsOnInitSig = max(0, (int) $val);
+        $this->endComaJobsOnInitSig = is_null($val) ? null : max(0, (int) $val);
     }
 }
