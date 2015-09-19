@@ -56,7 +56,7 @@ class JobRecord extends EntityRepository
         $qryBld = $this->createQueryBuilder('j')
                 ->andWhere($expr->isNull('j.success'))
                 ->andWhere($expr->isNotNull('j.start'))
-                ->andWhere($expr->lt("DATE_ADD(j.lastUpdate, j.timeOut, 'second')", 'CURRENT_DATE()'));
+                ->andWhere($expr->lt("DATE_ADD(j.lastUpdate, j.timeOut, 'second')", 'CURRENT_TIMESTAMP()'));
 
         if ($jobClass) {
             $qryBld->andWhere('j INSTANCE OF ' . $jobClass);
