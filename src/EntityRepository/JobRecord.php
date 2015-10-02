@@ -3,7 +3,7 @@
 namespace Bvarent\JobManager\EntityRepository;
 
 use Bvarent\JobManager\Entity;
-use Doctrine\DBAL\Types\Type as DBALType;
+use DateTime;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -28,8 +28,7 @@ class JobRecord extends EntityRepository
 
         // Filter on job class.
         if (!empty($jobClass)) {
-            $qryBuilder->andWhere('j INSTANCE OF :jobclass')
-                    ->setParameter(':jobclass', $jobClass);
+            $qryBuilder->andWhere('j INSTANCE OF ' . $jobClass);
         }
 
         // Filter on running solo.
@@ -81,7 +80,7 @@ class JobRecord extends EntityRepository
         $qryBld = $this->createQueryBuilder('j')
                 ->where($expr->isNotNull('j.success'))
                 ->andWhere($expr->lt('j.start', ':before_this_date'))
-                ->setParameter('before_this_date', new \DateTime("-{$ageInSeconds} seconds"));
+                ->setParameter('before_this_date', new DateTime("-{$ageInSeconds} seconds"));
 
         if ($jobClass) {
             $qryBld->andWhere('j INSTANCE OF ' . $jobClass);
