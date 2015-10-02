@@ -93,9 +93,15 @@ class JobManager implements IEntityManagerAware
         // If a conflicting job was found, end this job and throw an exception.
         if (!empty($conflictingJobs)) {
             $this->finishJob($jobRecord, false);
-            $firstRunningJob = current($conflictingJobs);
+            $someConflictingJob = current($conflictingJobs);
             /* @var $firstRunningJob JobRecord */
-            throw new RuntimeException(sprintf('A job of type %s is already running %s since %s with pid %s.', $jobRecord, $firstRunningJob->start, ($firstRunningJob->solo ? '(solo)' : ''), $firstRunningJob->pid));
+            throw new RuntimeException(sprintf('A job of type %s is already running %s since %s with id %s and pid %s.',
+                    get_class($jobRecord),
+                    $someConflictingJob->solo ? '(solo)' : '',
+                    $someConflictingJob->start ? $someConflictingJob->start->format(DATE_ISO8601) : '-not started-',
+                    $someConflictingJob->id,
+                    $someConflictingJob->pid
+            ));
         }
         
         // Add pid if not yet set.
