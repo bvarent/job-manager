@@ -67,8 +67,7 @@ abstract class Base implements JsonSerializable
             return static::$extractor->extract($this);
         }
         
-        // TODO remove json_encode dependency.
-        return json_encode($this);
+        return $this;
     }
 
     /**
