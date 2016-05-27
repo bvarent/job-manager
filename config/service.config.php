@@ -2,16 +2,16 @@
 
 namespace Bvarent\JobManager;
 
-return array(
-    'aliases' => array(
+return [
+    'aliases' => [
         'JobManager' => __NAMESPACE__ . '\Service\JobManager',
         __NAMESPACE__ => __NAMESPACE__ . '\Service\JobManager',
-    ),
-    'factories' => array(
+    ],
+    'factories' => [
         __NAMESPACE__ . '\Service\JobManager' => __NAMESPACE__ . '\ServiceManager\JobManagerFactory',
-    ),
-    'initializers' => array(
+    ],
+    'initializers' => [
         __NAMESPACE__ . '\ServiceManager\JobManagerInitializer',
         __NAMESPACE__ . '\ServiceManager\EntityManagerInitializer',
-    )
-);
+    ]
+];

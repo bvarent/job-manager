@@ -14,7 +14,6 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  */
 class EntityManagerInitializer implements InitializerInterface
 {
-
     public function initialize($instance, ServiceLocatorInterface $serviceLocator)
     {
         if (! $instance instanceof IEntityManagerAware) {
@@ -31,5 +30,4 @@ class EntityManagerInitializer implements InitializerInterface
         // Inject the EntityManager into the service.
         $instance->setEntityManager($em);
     }
-
 }

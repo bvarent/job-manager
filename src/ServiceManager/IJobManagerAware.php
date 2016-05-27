@@ -12,7 +12,6 @@ use Bvarent\JobManager\Service\JobManager;
  */
 interface IJobManagerAware
 {
-
     /**
      * Accepts the JobManager service.
      *

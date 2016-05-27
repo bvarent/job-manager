@@ -13,7 +13,6 @@ use Doctrine\ORM\EntityRepository;
  */
 class JobRecord extends EntityRepository
 {
-
     /**
      * Collects all currently running jobs of some kind.
      * @param string $jobClass The kind/class/type of job. Null = any kind.
@@ -91,5 +90,4 @@ class JobRecord extends EntityRepository
 
         return $results;
     }
-
 }

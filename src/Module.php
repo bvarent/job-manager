@@ -15,7 +15,6 @@ use Zend\ModuleManager\ModuleManagerInterface;
 
 class Module implements AutoloaderProviderInterface, ConfigProviderInterface, ServiceProviderInterface, DependencyIndicatorInterface, ConsoleBannerProviderInterface, ConsoleUsageProviderInterface
 {
-    
     /**
      * A human readable name for this module.
      */
@@ -39,21 +38,21 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Se
     public function getAutoloaderConfig()
     {
         // Composer probably takes care of the autoloading. But just in case:
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
+        return [
+            'Zend\Loader\StandardAutoloader' => [
+                'namespaces' => [
                     __NAMESPACE__ => __DIR__,
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
     public function getModuleDependencies()
     {
-        return array(
+        return [
             'DoctrineModule',
             'DoctrineORMModule',
-        );
+        ];
     }
 
     public function getConfig()
@@ -80,9 +79,9 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Se
     {
         $entityManagerName = !empty($entityManagerName) ? $entityManagerName : 'orm_default';
         $defaultServiceName = $entityManagerName;
-        $emptyConfig = new Config(array());
+        $emptyConfig = new Config([]);
         $doctrineConfig = $config->get('doctrine', $emptyConfig);
-        $doctrineServiceNames = array();
+        $doctrineServiceNames = [];
         
         // Take over entitymanager name.
         $doctrineServiceNames['entitymanager'] = $entityManagerName;
@@ -112,7 +111,7 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Se
         $doctrineServiceNames = $this->getDoctrineServiceNamesFromEntityManager($totalConfig, $totalConfig[static::CONFIG_KEY]['entitymanager']);
 
         $doctrineConfigArray = include $modulePath . '/config/doctrine.config.php';
-        $doctrineConfig = new Config(array('doctrine' => $doctrineConfigArray));
+        $doctrineConfig = new Config(['doctrine' => $doctrineConfigArray]);
         
         return $doctrineConfig;
     }
@@ -149,7 +148,7 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Se
     {
         // Bind our 'onMergeConfig' method to the 'mergeConfig' event.
         $events = $moduleManager->getEventManager();
-        $events->attach(ModuleEvent::EVENT_MERGE_CONFIG, array($this, 'onMergeConfig'));
+        $events->attach(ModuleEvent::EVENT_MERGE_CONFIG, [$this, 'onMergeConfig']);
     }
 
     public function getConsoleBanner(AdapterInterface $console)
@@ -159,15 +158,14 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Se
 
     public function getConsoleUsage(AdapterInterface $console)
     {
-        return array(
+        return [
             Module::CONFIG_KEY . ' end-coma-jobs [--signal=] [<type>]' => 'Mark timed out jobs as ended by setting their success parameter to false.',
-            array("--signal", "(Optional) Send this (kill) signal to the job's process. WARNING: The PID might not belong to the running script/job anymore. Also you might not have enough permissions to kill the process."),
-            array("<type>", "(Optional) Only consider job records of this type. Specify the full entity class or the discriminator name."),
+            ["--signal", "(Optional) Send this (kill) signal to the job's process. WARNING: The PID might not belong to the running script/job anymore. Also you might not have enough permissions to kill the process."],
+            ["<type>", "(Optional) Only consider job records of this type. Specify the full entity class or the discriminator name."],
             
             Module::CONFIG_KEY . ' delete-old-jobs --age= [<type>]' => 'Delete old, finalized, jobs from the log.',
-            array("--age", "Jobs must be at least this old. Specified as an ISO_8601 duration. E.g. 'P2M' for 2 months and older."),
-            array("<type>", "(Optional) Only consider job records of this type. Specify the full entity class or the discriminator name."),
-        );
+            ["--age", "Jobs must be at least this old. Specified as an ISO_8601 duration. E.g. 'P2M' for 2 months and older."],
+            ["<type>", "(Optional) Only consider job records of this type. Specify the full entity class or the discriminator name."],
+        ];
     }
-
 }

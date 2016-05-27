@@ -2,39 +2,39 @@
 
 namespace Bvarent\JobManager;
 
-return array(
+return [
     Module::CONFIG_KEY => Options\JobManager::defaults(),
     
     // Controllers.
-    'controllers' => array(
-        'invokables' => array(
+    'controllers' => [
+        'invokables' => [
             __NAMESPACE__ . '\Controller\Console' => __NAMESPACE__ . '\Controller\Console',
-        ),
-    ),
+        ],
+    ],
     
     // Console routes.
-    'console' => array(
-        'router' => array(
-            'routes' => array(
-                Module::CONFIG_KEY . ' end-coma-jobs' => array(
-                    'options' => array(
+    'console' => [
+        'router' => [
+            'routes' => [
+                Module::CONFIG_KEY . ' end-coma-jobs' => [
+                    'options' => [
                         'route' => Module::CONFIG_KEY . ' end-coma-jobs [--signal=] [<type>]',
-                        'defaults' => array(
+                        'defaults' => [
                             'controller' => __NAMESPACE__ . '\Controller\Console',
                             'action' => 'endComaJobs',
-                        ),
-                    ),
-                ),
-                Module::CONFIG_KEY . ' delete-old-jobs' => array(
-                    'options' => array(
+                        ],
+                    ],
+                ],
+                Module::CONFIG_KEY . ' delete-old-jobs' => [
+                    'options' => [
                         'route' => Module::CONFIG_KEY . ' delete-old-jobs --age= [<type>]',
-                        'defaults' => array(
+                        'defaults' => [
                             'controller' => __NAMESPACE__ . '\Controller\Console',
                             'action' => 'deleteOldJobs',
-                        ),
-                    ),
-                ),
-            ),
-        ),
-    ),
-);
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+];

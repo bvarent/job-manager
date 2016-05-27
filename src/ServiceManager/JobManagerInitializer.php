@@ -22,5 +22,4 @@ class JobManagerInitializer implements InitializerInterface
         /* @param $jobManager JobManager */
         $instance->setJobManager($jobManager);
     }
-
 }

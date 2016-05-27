@@ -45,5 +45,4 @@ class Console extends AbstractConsoleController
         
         $this->console->writeLine(sprintf("Deleted %d jobs.", $deletedJobsCount));
     }
-
 }

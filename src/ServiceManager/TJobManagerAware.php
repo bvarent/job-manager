@@ -11,7 +11,6 @@ use Bvarent\JobManager\Service\JobManager;
  */
 trait TJobManagerAware
 {
-
     /**
      * @var JobManager
      */

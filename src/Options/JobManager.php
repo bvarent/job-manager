@@ -14,12 +14,13 @@ use Zend\Stdlib\AbstractOptions;
  */
 class JobManager extends AbstractOptions
 {
-    public static function defaults() {
-        return array(
+    public static function defaults()
+    {
+        return [
             'entitymanager' => 'orm_default',
             'end_coma_jobs_on_init' => false,
             'end_coma_jobs_on_init_sig' => null,
-        );
+        ];
     }
 
     protected $entitymanager;
@@ -45,7 +46,7 @@ class JobManager extends AbstractOptions
     {
         if (!(is_bool($val)
                 ||  is_string($val)
-                || (is_array($val) && (count($val) === array_sum(array_map('is_string', $val))))) ) {
+                || (is_array($val) && (count($val) === array_sum(array_map('is_string', $val)))))) {
             throw new InvalidArgumentException(sprintf("'end_coma_jobs_on_init should be a bool, string or string[]"));
         }
         $this->endComaJobsOnInit = $val;

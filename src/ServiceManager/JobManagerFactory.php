@@ -14,7 +14,6 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  */
 class JobManagerFactory implements FactoryInterface
 {
-
     /**
      * {inheritdoc}
      * @return JobManager

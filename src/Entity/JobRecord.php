@@ -32,7 +32,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 abstract class JobRecord extends Base
 {
-
     /**
      * Whether jobs of this class should run solo by default.
      * @var boolean
@@ -137,5 +136,4 @@ abstract class JobRecord extends Base
         $this->lastUpdate = new DateTime();
         $this->timeOut = static::getDefaultTimeOut();
     }
-
 }

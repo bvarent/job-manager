@@ -12,25 +12,25 @@ if (!isset($modulePath)) {
 // $doctrineServiceNames should be already defined by the file which included this file.
 if (!isset($doctrineServiceNames)) {
     // Defaults.
-    $doctrineServiceNames = array();
-    $doctrineServiceNames['driver'] = 'orm_default';    
+    $doctrineServiceNames = [];
+    $doctrineServiceNames['driver'] = 'orm_default';
 }
 
 // $config['doctrine'] = ...
-return array(
-    'driver' => array(
+return [
+    'driver' => [
         // Configure our own metadata driver, which basically means:
         //  read class metadata from annotations on files in this path.
-        __NAMESPACE__ . '_driver' => array(
+        __NAMESPACE__ . '_driver' => [
             'cache' => 'array',
             'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
             'paths' => $modulePath . '/src/Entity'
-        ),
+        ],
         // Presuming the existing metadata driver in the ORM service is a DriverChain, add our module-specific driver to it.
-        $doctrineServiceNames['driver'] => array(
-            'drivers' => array(
+        $doctrineServiceNames['driver'] => [
+            'drivers' => [
                 __NAMESPACE__ . '\Entity' => __NAMESPACE__ . '_driver'
-            )
-        )
-    ),
-);
+            ]
+        ]
+    ],
+];

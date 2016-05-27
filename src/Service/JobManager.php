@@ -20,7 +20,6 @@ use UnexpectedValueException;
  */
 class JobManager implements IEntityManagerAware
 {
-
     const JOB_BASE_CLASS = 'Bvarent\JobManager\Entity\JobRecord';
 
     /**
@@ -284,7 +283,7 @@ class JobManager implements IEntityManagerAware
         }
         $classOrDiscriminatorName = (string) $classOrDiscriminatorName;
         if (class_exists($classOrDiscriminatorName)
-                && is_subclass_of($classOrDiscriminatorName, static::JOB_BASE_CLASS) ) {
+                && is_subclass_of($classOrDiscriminatorName, static::JOB_BASE_CLASS)) {
             return $classOrDiscriminatorName;
         }
         

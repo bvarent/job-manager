@@ -30,7 +30,6 @@ use Zend\Stdlib\JsonSerializable;
  */
 abstract class Base implements JsonSerializable
 {
-
     /**
      * @var ExtractionInterface
      */
@@ -112,7 +111,7 @@ abstract class Base implements JsonSerializable
             // get_class_methods returns methods ordered by subclass, line number.
             // TODO Static reflection service might be faster?
             $availableMethods = get_class_methods($class);
-            $callMethods = array();
+            $callMethods = [];
             foreach ($availableMethods as $methodName) {
                 if (substr($methodName, 0, 6) == '__call' && strlen($methodName) > 6) {
                     $callMethods[] = $methodName;
@@ -121,12 +120,12 @@ abstract class Base implements JsonSerializable
             self::$callMethods[$class] = $callMethods;
         }
 
-        $failureMsgs = array();
+        $failureMsgs = [];
 
         // Try all of the __call prefixed methods.
         foreach ($callMethods as $callMethod) {
             try {
-                return call_user_func(array($this, $callMethod), $method, $args);
+                return call_user_func([$this, $callMethod], $method, $args);
             } catch (NoMatchForMagicCall $e) {
                 $failureMsgs[] = $e->getMessage();
             }
