@@ -24,9 +24,5 @@
         "psr-4": {
             "Bvarent\\JobManager\\": "src/"
         }
-    },
-    "bin": [
-        "bin/filter_solo_inuse",
-        "bin/notify_timeout"
-    ]
+    }
 }

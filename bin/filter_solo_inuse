@@ -1,9 +1,0 @@
-#!/bin/sh
-# Filters out `solo`'s error message about an address being already in use
-#  from the stderr stream.
-# Solo: https://github.com/timkay/solo
-# You can use this for filtering a cronjob command's output for example:
-# this_script solo -port=1234 some command
-
-# The stderr and stdout streams are switched, so `sed` can work on what was in stderr. After that, they are switched back.
-($@ 3>&1 1>&2 2>&3 3>&- | sed '/^solo[(][0-9]*[)]: Address already in use$/d') 3>&1 1>&2 2>&3 3>&-
