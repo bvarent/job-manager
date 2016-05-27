@@ -10,11 +10,11 @@
         }
     ],
     "require": {
-        "php": ">=5.3.3",
+        "php": ">=5.5",
         "zendframework/zend-config": "^2.3",
         "zendframework/zend-servicemanager": "^2.3",
         "zendframework/zend-modulemanager": "^2.3",
-        "doctrine/doctrine-module": "~0.8"
+        "doctrine/doctrine-module": "^1"
     },
     "require-dev": {
         "zendframework/zend-mvc": "^2.3",
